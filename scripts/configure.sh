@@ -33,8 +33,9 @@ chmod 0600 $HOME/.vnc/passwd
 # install rustdesk
 wget https://github.com/rustdesk/rustdesk/releases/download/1.4.4/rustdesk-1.4.4-x86_64.deb
 sudo apt install -fy ./rustdesk*.deb
-rustdesk --password $VNC_PASSWORD@rust69
-sudo systemctl start rustdesk
+sudo rustdesk --password $VNC_PASSWORD@rust69
+# sudo systemctl start rustdesk
+nohup rustdesk > /dev/null 2>&1 &
 sleep 10s
 rustdesk --get-id
 
