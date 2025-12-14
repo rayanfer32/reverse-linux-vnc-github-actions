@@ -27,5 +27,15 @@ echo $VNC_PASSWORD | vncpasswd -f > $HOME/.vnc/passwd
 chmod 0600 $HOME/.vnc/passwd
 
 # Fifth and last, set up auth token from argument
-./ngrok authtoken $NGROK_AUTH_TOKEN
+# ./ngrok authtoken $NGROK_AUTH_TOKEN
+./ngrok config add-authtoken $NGROK_AUTH_TOKEN
+
+# install rustdesk
+wget https://github.com/rustdesk/rustdesk/releases/download/1.4.4/rustdesk-1.4.4-x86_64.deb
+sudo apt install -fy ./rustdesk*.deb
+rustdesk --password $VNC_PASSWORD@rust69
+sudo systemctl start rustdesk
+sleep 10s
+rustdesk --get-id
+
 exit
