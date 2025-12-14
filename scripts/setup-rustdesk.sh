@@ -1,7 +1,8 @@
 #!/bin/bash
 # install rustdesk
 
-wget https://github.com/rustdesk/rustdesk/releases/download/1.4.4/rustdesk-1.4.4-x86_64.deb
+echo "Installing RustDesk..."
+wget https://github.com/rustdesk/rustdesk/releases/download/1.4.4/rustdesk-1.4.4-x86_64.deb > /dev/null 2>&1
 sudo apt install -fy ./rustdesk*.deb
 
 # Ensure we run RustDesk in the user account (runner) on the VNC display
