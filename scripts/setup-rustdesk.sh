@@ -9,13 +9,21 @@ export DISPLAY=${DISPLAY:-:1}
 LOGFILE="$HOME/rustdesk.log"
 touch "$LOGFILE"
 
-# Start RustDesk as the current user (expected to be 'runner' in GH Actions)
-# Use the VNC password (if provided) and write stdout/stderr to the logfile
-nohup sh -c "export DISPLAY=$DISPLAY; rustdesk --password \"${VNC_PASSWORD}@rust69\" >>\"$LOGFILE\" 2>&1" >/dev/null 2>&1 &
+# Set RustDesk password (if provided)
+if [ -n "$VNC_PASSWORD" ]; then
+	echo "Setting RustDesk password" >>"$LOGFILE"
+	sudo rustdesk --password "${VNC_PASSWORD}@rust69" >>"$LOGFILE" 2>&1 || true
+fi
+
+# Start RustDesk in background as the user (use `rustdesk &` as requested)
+export DISPLAY=$DISPLAY
+rustdesk >>"$LOGFILE" 2>&1 &
+RS_PID=$!
+echo "RustDesk started (PID: $RS_PID)" >>"$LOGFILE"
 
 # Give RustDesk a moment to start and print its ID
 sleep 5s
-DISPLAY=$DISPLAY rustdesk --get-id || true
+DISPLAY=$DISPLAY rustdesk --get-id >>"$LOGFILE" 2>&1 || true
 sleep 5s
 
 # Print where logs are and show recent output for visibility in CI logs
