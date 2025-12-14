@@ -29,7 +29,7 @@ jobs:
         env:
           NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
           VNC_PASSWORD: ${{ secrets.VNC_PASSWORD }}
-        run: ./scripts/setup-rustdesk.sh
+        run: bash scripts/setup-rustdesk.sh
 
       - name: Start tunnel with ngrok...
         run: ./ngrok tcp 7582
