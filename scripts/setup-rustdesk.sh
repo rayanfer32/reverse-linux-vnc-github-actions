@@ -9,7 +9,7 @@ sudo apt install -fy ./rustdesk*.deb
 export DISPLAY=${DISPLAY:-:1}
 LOGFILE="$HOME/rustdesk.log"
 touch "$LOGFILE"
-
+sleep 5s
 # Set RustDesk password (if provided)
 if [ -n "$VNC_PASSWORD" ]; then
 	echo "Setting RustDesk password" >>"$LOGFILE"
