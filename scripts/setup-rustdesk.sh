@@ -9,11 +9,24 @@ sudo apt install -fy ./rustdesk*.deb
 export DISPLAY=${DISPLAY:-:1}
 LOGFILE="$HOME/rustdesk.log"
 touch "$LOGFILE"
+
 sleep 5s
-# Set RustDesk password (if provided)
+# Set RustDesk password (if provided) — allow sudo if needed, but preserve HOME so config is written in the right place
 if [ -n "$VNC_PASSWORD" ]; then
-	echo "Setting RustDesk password" >>"$LOGFILE"
-	sudo rustdesk --password "${VNC_PASSWORD}@rust69" >>"$LOGFILE" 2>&1 || true
+	echo "Setting RustDesk password (as user $(whoami), HOME=$HOME)" >>"$LOGFILE"
+	# Ensure the expected config directory exists and has restrictive perms
+	mkdir -p "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
+	chmod 700 "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
+	# First try without sudo (preferred)
+	if rustdesk --password "${VNC_PASSWORD}@rust69" >>"$LOGFILE" 2>&1; then
+		echo "Password set without sudo" >>"$LOGFILE"
+	else
+		echo "Retrying password set with sudo (preserving HOME/DISPLAY)" >>"$LOGFILE"
+		# Use sudo but preserve HOME and DISPLAY so rustdesk writes to the correct per-user path
+		sudo env HOME="$HOME" DISPLAY="$DISPLAY" rustdesk --password "${VNC_PASSWORD}@rust69" >>"$LOGFILE" 2>&1 || true
+		# Make sure the config files are owned by the original user so the later rustdesk run can read them
+		sudo chown -R "$USER":"$USER" "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
+	fi
 fi
 
 # Start RustDesk in background as the user (use `rustdesk &` as requested)
@@ -30,5 +43,26 @@ sleep 5s
 # Print where logs are and show recent output for visibility in CI logs
 echo "RustDesk log: $LOGFILE"
 tail -n 40 "$LOGFILE" || true
+
+# === TELEGRAM CONFIG ===
+BOT_TOKEN=$TG_BOT_TOKEN
+CHAT_ID=$TG_CHAT_ID
+
+send_message() {
+  local MESSAGE="$1"
+  curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+    -d chat_id="${CHAT_ID}" \
+    -d text="${MESSAGE}" \
+    -d parse_mode="HTML" > /dev/null
+}
+
+# Message on start
+send_message "🚀 Rustdesk running on: $(rustdesk --get-id)"
+
+# Sleep for 5 hours 55 minutes (5*3600 + 55*60 = 21300 seconds)
+sleep 21300
+
+# Message after delay
+send_message "⏰ 5h 55m completed at $(date)"
 
 exit
