@@ -18,15 +18,13 @@ if [ -n "$VNC_PASSWORD" ]; then
 	mkdir -p "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
 	chmod 700 "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
 	# First try without sudo (preferred)
-	if rustdesk --password "${VNC_PASSWORD}@rust69" >>"$LOGFILE" 2>&1; then
-		echo "Password set without sudo" >>"$LOGFILE"
-	else
-		echo "Retrying password set with sudo (preserving HOME/DISPLAY)" >>"$LOGFILE"
-		# Use sudo but preserve HOME and DISPLAY so rustdesk writes to the correct per-user path
-		sudo env HOME="$HOME" DISPLAY="$DISPLAY" rustdesk --password "${VNC_PASSWORD}@rust69" >>"$LOGFILE" 2>&1 || true
-		# Make sure the config files are owned by the original user so the later rustdesk run can read them
-		sudo chown -R "$USER":"$USER" "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
-	fi
+
+	echo "Trying to set password with sudo (preserving HOME/DISPLAY)" >>"$LOGFILE"
+	# Use sudo but preserve HOME and DISPLAY so rustdesk writes to the correct per-user path
+	sudo env HOME="$HOME" DISPLAY="$DISPLAY" rustdesk --password "${VNC_PASSWORD}@rust69" >>"$LOGFILE" 2>&1 || true
+	# Make sure the config files are owned by the original user so the later rustdesk run can read them
+	sudo chown -R "$USER":"$USER" "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
+	
 fi
 
 # Start RustDesk in background as the user (use `rustdesk &` as requested)
@@ -59,10 +57,9 @@ send_message() {
 # Message on start
 send_message "🚀 Rustdesk running on: $(rustdesk --get-id)"
 
-# Sleep for 5 hours 55 minutes (5*3600 + 55*60 = 21300 seconds)
-sleep 21300
+# Schedule non-blocking notification after 5 hours 55 minutes (5*3600 + 55*60 = 21300 seconds)
+( sleep 21300 && send_message "⏰ 5h 55m completed at $(date)" ) &
 
-# Message after delay
-send_message "⏰ 5h 55m completed at $(date)"
+echo "Scheduled final notification (in 5h55m)" >>"$LOGFILE"
 
 exit
