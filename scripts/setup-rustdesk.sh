@@ -1,17 +1,17 @@
 #!/bin/bash
-# install rustdesk
 
+# * install rustdesk
 echo "Installing RustDesk..."
 wget https://github.com/rustdesk/rustdesk/releases/download/1.4.4/rustdesk-1.4.4-x86_64.deb > /dev/null 2>&1
 sudo apt install -fy ./rustdesk*.deb
 
-# Ensure we run RustDesk in the user account (runner) on the VNC display
+# * Ensure we run RustDesk in the user account (runner) on the VNC display
 export DISPLAY=${DISPLAY:-:1}
 LOGFILE="$HOME/rustdesk.log"
 touch "$LOGFILE"
-
 sleep 5s
-# Set RustDesk password (if provided) — allow sudo if needed, but preserve HOME so config is written in the right place
+
+# * Set RustDesk password (if provided) — allow sudo if needed, but preserve HOME so config is written in the right place
 if [ -n "$VNC_PASSWORD" ]; then
 	echo "Setting RustDesk password (as user $(whoami), HOME=$HOME)" >>"$LOGFILE"
 	# Ensure the expected config directory exists and has restrictive perms
@@ -42,7 +42,7 @@ sleep 5s
 echo "RustDesk log: $LOGFILE"
 tail -n 40 "$LOGFILE" || true
 
-# === TELEGRAM CONFIG ===
+# * === TELEGRAM CONFIG ===
 BOT_TOKEN=$TG_BOT_TOKEN
 CHAT_ID=$TG_CHAT_ID
 
