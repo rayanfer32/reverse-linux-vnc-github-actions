@@ -15,16 +15,15 @@ sleep 5s
 if [ -n "$VNC_PASSWORD" ]; then
 	echo "Setting RustDesk password (as user $(whoami), HOME=$HOME)" >>"$LOGFILE"
 	# Ensure the expected config directory exists and has restrictive perms
-	# mkdir -p "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
-	# chmod 700 "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
+	mkdir -p "$HOME/.config/rustdesk"
+	chmod 700 "$HOME/.config/rustdesk"
 	# First try without sudo (preferred)
 
 	echo "Trying to set password with sudo (preserving HOME/DISPLAY)" >>"$LOGFILE"
 	# Use sudo but preserve HOME and DISPLAY so rustdesk writes to the correct per-user path
 	sudo env HOME="$HOME" DISPLAY="$DISPLAY" rustdesk --password "${VNC_PASSWORD}@rust69" >>"$LOGFILE" 2>&1 || true
 	# Make sure the config files are owned by the original user so the later rustdesk run can read them
-	# sudo chown -R "$USER":"$USER" "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
-	
+	sudo chown -R "$USER":"$USER" "$HOME/.config/rustdesk"
 fi
 
 # Start RustDesk in background as the user (use `rustdesk &` as requested)
