@@ -15,15 +15,15 @@ sleep 5s
 if [ -n "$VNC_PASSWORD" ]; then
 	echo "Setting RustDesk password (as user $(whoami), HOME=$HOME)" >>"$LOGFILE"
 	# Ensure the expected config directory exists and has restrictive perms
-	mkdir -p "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
-	chmod 700 "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
+	# mkdir -p "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
+	# chmod 700 "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
 	# First try without sudo (preferred)
 
 	echo "Trying to set password with sudo (preserving HOME/DISPLAY)" >>"$LOGFILE"
 	# Use sudo but preserve HOME and DISPLAY so rustdesk writes to the correct per-user path
 	sudo env HOME="$HOME" DISPLAY="$DISPLAY" rustdesk --password "${VNC_PASSWORD}@rust69" >>"$LOGFILE" 2>&1 || true
 	# Make sure the config files are owned by the original user so the later rustdesk run can read them
-	sudo chown -R "$USER":"$USER" "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
+	# sudo chown -R "$USER":"$USER" "$HOME/.config/rustdesk" >>"$LOGFILE" 2>&1 || true
 	
 fi
 
@@ -31,12 +31,10 @@ fi
 export DISPLAY=$DISPLAY
 rustdesk >>"$LOGFILE" 2>&1 &
 RS_PID=$!
-echo "RustDesk started (PID: $RS_PID)" >>"$LOGFILE"
+echo "RustDesk started (PID: $RS_PID)" 
 
 # Give RustDesk a moment to start and print its ID
-sleep 5s
-DISPLAY=$DISPLAY rustdesk --get-id >>"$LOGFILE" 2>&1 || true
-sleep 5s
+DISPLAY=$DISPLAY rustdesk --get-id
 
 # Print where logs are and show recent output for visibility in CI logs
 echo "RustDesk log: $LOGFILE"
@@ -46,16 +44,17 @@ tail -n 40 "$LOGFILE" || true
 BOT_TOKEN=$TG_BOT_TOKEN
 CHAT_ID=$TG_CHAT_ID
 
+
 send_message() {
   local MESSAGE="$1"
   curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
     -d chat_id="${CHAT_ID}" \
     -d text="${MESSAGE}" \
-    -d parse_mode="HTML" > /dev/null
+    -d parse_mode="MarkdownV2" > /dev/null
 }
 
 # Message on start
-send_message "🚀 Rustdesk running on: $(rustdesk --get-id)"
+send_message "🚀 Rustdesk running on: \`$(rustdesk --get-id)\`"
 
 # Schedule non-blocking notification after 5 hours 55 minutes (5*3600 + 55*60 = 21300 seconds)
 ( sleep 21300 && send_message "⏰ 5h 55m completed at $(date)" ) &
