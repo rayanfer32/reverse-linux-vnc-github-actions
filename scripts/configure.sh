@@ -14,7 +14,7 @@ sudo apt install -y \
   xfce4-settings \
   xfwm4 \
   xfce4-terminal \
-  firefox
+  firefox > /dev/null 2>&1
 
 # Second, install TurboVNC
 # Fun Fact: TurboVNC is the only VNC implementations that supports OpenGL acceleration without an graphics device by default
