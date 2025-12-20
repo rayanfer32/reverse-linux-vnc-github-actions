@@ -5,7 +5,16 @@
 
 # First, install required packages...
 sudo apt update
-sudo apt install -y xfce4 xfce4-goodies xfonts-base xubuntu-icon-theme xubuntu-wallpapers gnome-icon-theme x11-apps x11-common x11-session-utils x11-utils x11-xserver-utils x11-xkb-utils dbus-user-session dbus-x11 gnome-system-monitor gnome-control-center libpam0g libxt6 libxext6 > /dev/null 2>&1
+# sudo apt install -y xfce4 xfce4-goodies xfonts-base xubuntu-icon-theme xubuntu-wallpapers gnome-icon-theme x11-apps x11-common x11-session-utils x11-utils x11-xserver-utils x11-xkb-utils dbus-user-session dbus-x11 gnome-system-monitor gnome-control-center libpam0g libxt6 libxext6 > /dev/null 2>&1
+sudo apt install -y \
+  xorg \
+  dbus-x11 \
+  xfce4-session \
+  xfce4-panel \
+  xfce4-settings \
+  xfwm4 \
+  xfce4-terminal \
+  firefox
 
 # Second, install TurboVNC
 # Fun Fact: TurboVNC is the only VNC implementations that supports OpenGL acceleration without an graphics device by default
