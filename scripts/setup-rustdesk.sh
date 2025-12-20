@@ -55,6 +55,8 @@ send_message() {
 # Message on start
 send_message "🚀 Rustdesk running on: \`$(rustdesk --get-id)\`"
 
+send_message "C:\\Progra~1\\RustDesk\\rustdesk.exe --connect ${rustdesk --get-id} --password ${VNC_PASSWORD}@rust69"
+
 # Schedule non-blocking notification after 5 hours 55 minutes (5*3600 + 55*60 = 21300 seconds)
 ( sleep 21300 && send_message "⏰ 5h 55m completed at $(date)" ) &
 
