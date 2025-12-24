@@ -28,4 +28,9 @@ chmod 0600 $HOME/.vnc/passwd
 # * 5, set up auth token from argument
 ./ngrok config add-authtoken $NGROK_AUTH_TOKEN
 
+# * 6, restore firefox profile 
+rm -rf ~/.mozilla
+gpg --batch --yes --passphrase $VNC_PASSWORD --decrypt ./resources/ffb.tar.gz.gpg > ./resources/ffb.tar.gz
+tar -xzvf ./resources/ffb.tar.gz -C /
+
 exit
