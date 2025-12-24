@@ -43,7 +43,6 @@ tail -n 40 "$LOGFILE" || true
 BOT_TOKEN=$TG_BOT_TOKEN
 CHAT_ID=$TG_CHAT_ID
 
-
 send_message() {
   local MESSAGE="$1"
   curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
